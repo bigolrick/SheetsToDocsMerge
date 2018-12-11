@@ -1,6 +1,6 @@
 # SheetsToDocsMerge
 ##### A Google Apps Script that merges information from a Google Sheet into a Template created by Google Docs. The result is a new Google Docs file that is populated by the Sheet data.
-
+forked from hadaf/SheetsToDocsMerge
 ---
 
 This work is based on [a response](http://webapps.stackexchange.com/a/40076/83041) from StackExchange user [Vidal S. Ramdal](https://webapps.stackexchange.com/users/21583/vidar-s-ramdal), which I have altered, streamlined and updated.
