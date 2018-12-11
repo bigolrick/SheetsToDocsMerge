@@ -1,3 +1,20 @@
+/*Save script and run initialize() to activate the trigger.
+ *
+ *On form submission, doMerge() will run and create a new document from the last response.
+ *
+ *Left onOpen() as is in case you want to run doMerge() manually from the document for testing.
+ */
+function initialize() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i in triggers) {
+    ScriptApp.deleteTrigger(triggers[i]);
+  }
+  ScriptApp.newTrigger("doMerge")
+    .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
+    .onFormSubmit()
+    .create();
+}
+
 /*  This is the main method that should be invoked. 
  *  Copy and paste the ID of your template Doc in the first line of this method.
  *
@@ -25,37 +42,36 @@ function doMerge() {
   var values = rows.getValues();
   var fieldNames = values[0];//First row of the sheet must be the the field names
 
-  for (var i = 1; i < numRows; i++) {//data values start from the second row of the sheet 
-    var row = values[i];
-    var body = bodyCopy.copy();
-    
-    for (var f = 0; f < fieldNames.length; f++) {
-      body.replaceText("\\[" + fieldNames[f] + "\\]", row[f]);//replace [fieldName] with the respective data value
-    }
-    
-    var numChildren = body.getNumChildren();//number of the contents in the template doc
-   
-    for (var c = 0; c < numChildren; c++) {//Go over all the content of the template doc, and replicate it for each row of the data.
-      var child = body.getChild(c);
-      child = child.copy();
-      if (child.getType() == DocumentApp.ElementType.HORIZONTALRULE) {
-        mergedDoc.appendHorizontalRule(child);
-      } else if (child.getType() == DocumentApp.ElementType.INLINEIMAGE) {
-        mergedDoc.appendImage(child.getBlob());
-      } else if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
-        mergedDoc.appendParagraph(child);
-      } else if (child.getType() == DocumentApp.ElementType.LISTITEM) {
-        mergedDoc.appendListItem(child);
-      } else if (child.getType() == DocumentApp.ElementType.TABLE) {
-        mergedDoc.appendTable(child);
-      } else {
-        Logger.log("Unknown element type: " + child);
-      }
-   }
-    
-   mergedDoc.appendPageBreak();//Appending page break. Each row will be merged into a new page.
-
+//  for (var i = 1; i < numRows; i++) {//data values start from the second row of the sheet 
+  var i = numRows
+  i -= 1
+  var row = values[i];
+  var body = bodyCopy.copy();
+  
+  for (var f = 0; f < fieldNames.length; f++) {
+    body.replaceText("\\[" + fieldNames[f] + "\\]", row[f]);//replace [fieldName] with the respective data value
   }
+  
+  var numChildren = body.getNumChildren();//number of the contents in the template doc
+ 
+  for (var c = 0; c < numChildren; c++) {//Go over all the content of the template doc, and replicate it for each row of the data.
+    var child = body.getChild(c);
+    child = child.copy();
+    if (child.getType() == DocumentApp.ElementType.HORIZONTALRULE) {
+      mergedDoc.appendHorizontalRule(child);
+    } else if (child.getType() == DocumentApp.ElementType.INLINEIMAGE) {
+      mergedDoc.appendImage(child.getBlob());
+    } else if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
+      mergedDoc.appendParagraph(child);
+    } else if (child.getType() == DocumentApp.ElementType.LISTITEM) {
+      mergedDoc.appendListItem(child);
+    } else if (child.getType() == DocumentApp.ElementType.TABLE) {
+      mergedDoc.appendTable(child);
+    } else {
+      Logger.log("Unknown element type: " + child);
+    }
+ }
+    
 }
 
 
